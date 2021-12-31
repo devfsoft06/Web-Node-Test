@@ -19,7 +19,7 @@ initializeApp({
 const db = getFirestore();
 
 app.listen(3003, () => {
-  console.log("Application started and Listening on port 3000");
+  console.log("Application started and Listening on port 3003");
 });
 
 // server your css as static
@@ -53,24 +53,17 @@ app.get("/read-firestore", (req, res) => {
 
 app.post("/send-mess", (req, res) => {
   console.info("send-mess ", req.body);
-  sendMess(req.body, res.send);
+  res.send(sendMess(req.body));
 });
 
 async function readFireStore() {
   try {
-    const citiesRef = db.collection("Devices-Token");
+    const citiesRef = db.collection("device-token");
     const snapshot = await citiesRef.get();
-
     let arr = [];
     snapshot.forEach((doc) => {
-      console.log(doc.id, "=>", doc.data());
       arr.push(doc.data());
     });
-
-    console.log("==================================== arr");
-    console.log(arr);
-    console.log("====================================");
-
     return arr;
   } catch (error) {
     return null;
@@ -78,52 +71,59 @@ async function readFireStore() {
 }
 
 async function sendMess(req, res) {
+  console.log("==================================== req");
+  console.log(req);
+  console.log("====================================");
   try {
     const firestore = await readFireStore();
     let tokenArr = [];
     if (firestore) {
       firestore.forEach((element) => {
-        if (!tokenArr.includes(element.token) || tokenArr.length === 0) {
-          tokenArr.push(element.token);
+        for (let i in element) {
+          tokenArr.push(element[i].expoPush);
         }
       });
-    }
-    console.info("tokenArr ", tokenArr);
 
-    let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
-    let messages = [];
-    for (let pushToken of tokenArr) {
-      if (!Expo.isExpoPushToken(pushToken)) {
-        console.error(`Push token ${pushToken} is not a valid Expo push token`);
-        continue;
+      let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
+      let messages = [];
+      for (let pushToken of tokenArr) {
+        if (!Expo.isExpoPushToken(pushToken)) {
+          console.error(`Push token ${pushToken} is not a valid Expo push token`);
+          continue;
+        }
+
+        messages.push({
+          to: pushToken,
+          sound: "default",
+          title: req.title,
+          body: req.content,
+          data: {
+            device: "Nokia 1020",
+            token: pushToken,
+          },
+        });
       }
 
-      messages.push({
-        to: pushToken,
-        sound: "default",
-        title: req.title,
-        body: req.content,
-        data: {
-          device: "Nokia 1020",
-          token: pushToken,
-        },
-      });
-    }
-
-    let chunks = expo.chunkPushNotifications(messages);
-    let tickets = [];
-    for (let chunk of chunks) {
-      try {
-        let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-        console.log(ticketChunk);
-        tickets.push(...ticketChunk);
-      } catch (error) {
-        console.error(error);
-        res(false);
+      let tickets = [];
+      const chunks = expo.chunkPushNotifications(messages);
+      for (let chunk of chunks) {
+        try {
+          let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+          tickets.push(ticketChunk);
+        } catch (error) {
+          console.error(error);
+        }
       }
+
+      console.log("==================================== tickets");
+      console.log(tickets);
+      console.log("====================================");
+
+      return tickets;
+    } else {
+      return false;
     }
-    res(true);
   } catch (error) {
-    res(false);
+    return false;
   }
 }
