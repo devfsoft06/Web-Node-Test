@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css">
+  <title>Web Test</title>
+</head>
+
+<body>
+  <div class="subscribe-container" style="padding: 20px;">
+    <img src="https://cdn.glitch.com/0e4d1ff3-5897-47c5-9711-d026c01539b8%2Fbddfd6e4434f42662b009295c9bab86e.gif?v=1573157191712" alt="this slowpoke moves" width="250" alt="404 image" />
+    <div class="row">
+      <label>Data send</label>
+      <input type="text" name="txtSend" id="txtSend" placeholder="">
+    </div>
+    <div class="row">
+      <label>Data receive</label>
+      <input type="text" name="txtReceive" id="txtReceive" placeholder="">
+    </div>
+    <div class="row">
+      <button id="btnSendData" onclick="handleSendData(1)">Google</button>
+      <button id="btnSendData" onclick="handleSendData(2)">Apple</button>
+      <button id="btnSendData" onclick="handleSendData(3)">Biometric</button>
+    </div>
+    <div class="row" style="margin-top: 50px;">
+      <div style="margin-top: 20px;">
+        <div>
+          <label>Tieu de</label>
+          <input type="text" name="txtTitle" id="txtTitle" value="Tieu de">
+        </div>
+        <div>
+          <label>Noi dung</label>
+          <input type="text" name="txtContent" id="txtContent" value="Noi dung">
+        </div>
+      </div>
+      <div class="column" style="margin-top: 20px;">
+        <button id="btnSendData" onclick="readFireStore()">Read FireStore</button>
+        <button id="btnSendData" onclick="sendMessage()">Send Message</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  document.addEventListener("message ", (event) => {
+    console.log("====================================document.addEventListener ");
+    console.log(event);
+    console.log("====================================");
+  });
+
+  window.addEventListener(" message ", (event) => {
+    console.log("====================================window.addEventListener ");
+    console.log(event);
+    console.log("====================================");
+  });
+
+  function handleSendData(type) {
+    console.info('---> handleSendData')
+    let channel = '';
+    switch (type) {
+      case 1:
+        channel = 'google_login';
+        break;
+      case 2:
+        channel = 'apple_login';
+        break;
+      case 3:
+        channel = 'biometric_login';
+        break;
+    
+      default:
+        channel = 'google_login';
+        break;
+    }
+
+    console.info('channel ', channel)
+    
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({
+          channel: channel,
+        })
+      );
+    }
+  }
+
+  async function readFireStore (){
+    try {
+      const data = await axios.get('http://10.0.12.111:3003/read-firestore')
+      console.log("🚀 ~ file: index.html ~ line 87 ~ readFireStore ~ data", data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  async function sendMessage (){
+    try {
+      const data = {
+        title: document.getElementById("txtTitle").value,
+        content: document.getElementById("txtContent").value
+      }
+      const send = await axios.post('http://10.0.12.111:3003/send-mess', data)
+      console.log("🚀 ~ file: index.html ~ line 111 ~ sendMessage ~ send", send)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+</script>
+
+</body>
+</html>
