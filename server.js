@@ -64,6 +64,17 @@ app.post("/push-notify", (req, res) => {
   res.send(sendMess(req.body));
 });
 
+app.post("/update-notify-status", (req, res) => {
+  console.info("update-notify-status ", req.body);
+  updateNotifyStatus(req.body, res);
+  res.send(req.body);
+});
+
+async function updateNotifyStatus(req) {
+  const resp = await axios.post("http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status", req);
+  console.log("🚀 ~ file: server.js ~ line 75 ~ updateNotifyStatus ~ resp", resp);
+}
+
 async function handleSignInGoogle(req, res) {
   try {
     const userInfo = await axios.get("https://www.googleapis.com/userinfo/v2/me", {

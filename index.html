@@ -112,7 +112,14 @@
 
   async function readFireStore (){
     try {
-      const send = await axios.get('http://localhost:4002/expo-test-336102/us-central1/api/read-firestore')
+      const data = {
+        content: {
+          title: 'Tieu de',
+          token: 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]'
+        },
+        identifier: '1231231232312312'
+      }
+      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status', data)
       console.log('==================================== readFireStore');
       console.log(send);
       console.log('====================================');
@@ -130,7 +137,7 @@
         deviceId: '',
         devicePush: '',
         expoPush: ''
-      }
+      };
 
       const type = parseInt(document.getElementById("txtDevice").value);
       if (type === 1){
