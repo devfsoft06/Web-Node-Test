@@ -1,3 +1,5 @@
+const fs = require("fs");
+const axios = require("axios");
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
@@ -5,6 +7,7 @@ const cors = require("cors");
 const { Expo } = require("expo-server-sdk");
 const { initializeApp, applicationDefault, cert } = require("firebase-admin/app");
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
+const constants = require("./global");
 const serviceAccount = require("./serviceAccountKey.json");
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,6 +32,11 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
+app.get("/home", (req, res) => {
+  console.info("/home ", req.headers.authorization);
+  res.sendFile(__dirname + "/home.html");
+});
+
 app.post("/", (req, res) => {
   res.send("Thank you for subscribing");
 });
@@ -43,37 +51,128 @@ app.get("/webview-config-url", function (req, res) {
 
 app.post("/google_login", (req, res) => {
   console.info("google_login ", req.body);
-  res.send("google_login");
+  handleSignInGoogle(req.body, res);
 });
 
 app.get("/read-firestore", (req, res) => {
   console.info("read-firestore ", req.body);
-  readFireStore();
+  readFireStore(res);
 });
 
-app.post("/send-mess", (req, res) => {
-  console.info("send-mess ", req.body);
+app.post("/push-notify", (req, res) => {
+  // console.info("send-mess ", req.body);
   res.send(sendMess(req.body));
 });
 
-async function readFireStore() {
+async function handleSignInGoogle(req, res) {
   try {
-    const citiesRef = db.collection("device-token");
-    const snapshot = await citiesRef.get();
-    let arr = [];
-    snapshot.forEach((doc) => {
-      arr.push(doc.data());
+    const userInfo = await axios.get("https://www.googleapis.com/userinfo/v2/me", {
+      headers: { Authorization: `Bearer ${req.token}` },
     });
-    return arr;
-  } catch (error) {
-    return null;
+
+    if (userInfo && userInfo.status === 200) {
+      fs.readFile("./db.txt", "utf8", (err, database) => {
+        if (err) {
+          res.send({
+            status: false,
+            msg: "Read database failed",
+          });
+        }
+
+        let arr = [];
+        let flagExist = false;
+        if (database) {
+          arr = JSON.parse(database);
+          arr.forEach((element) => {
+            console.log("==================================== element");
+            console.log(element);
+            console.log("==================================== req.user.email");
+            console.log(req.user.email);
+
+            if (element.user.email === req.user.email) {
+              flagExist = true;
+            }
+          });
+          arr.push(req);
+        } else {
+          arr.push(req);
+        }
+        console.log("==================================== flagExist");
+        console.log(flagExist);
+        console.log("====================================");
+
+        if (flagExist) {
+          res.send({
+            status: true,
+            jwt: "1234567890",
+            uri: "home",
+            email: req.user.email,
+            msg: "User has exist",
+          });
+        } else {
+          handleWriteFile("./db.txt", arr, res);
+        }
+      });
+    } else {
+      res.send({
+        status: false,
+        msg: "Firebase verified_email is " + userInfo.data.verified_email,
+      });
+    }
+  } catch (e) {
+    console.error("handleSignInGoogle", e);
+    res.send({
+      status: false,
+      msg: "handleSignInGoogle catch" + e.messages,
+    });
   }
 }
 
+function handleWriteFile(path, data, res) {
+  fs.writeFile(path, JSON.stringify(data), (err) => {
+    if (err) {
+      console.log("==================================== err");
+      console.log(err);
+      console.log("====================================");
+
+      res.send({
+        status: false,
+        msg: "Write file failed",
+      });
+    }
+
+    console.log("The file was saved!");
+
+    res.send({
+      status: true,
+      jwt: "1234567890",
+      uri: "home",
+      email: data.user.email,
+      msg: "Database is empty",
+    });
+  });
+}
+
+async function readFireStore(res) {
+  // try {
+  //   const citiesRef = db.collection("device-token");
+  //   const snapshot = await citiesRef.get();
+  //   let arr = [];
+  //   snapshot.forEach((doc) => {
+  //     arr.push(doc.data());
+  //   });
+  //   return arr;
+  // } catch (error) {
+  //   return null;
+  // }
+
+  console.log("constants ", constants);
+  let data = constants.MY_CONSTANT;
+  console.log("constants ", constants);
+  res.send(data);
+}
+
 async function sendMess(req, res) {
-  console.log("==================================== req");
-  console.log(req);
-  console.log("====================================");
   try {
     const firestore = await readFireStore();
     let tokenArr = [];
@@ -108,8 +207,7 @@ async function sendMess(req, res) {
       const chunks = expo.chunkPushNotifications(messages);
       for (let chunk of chunks) {
         try {
-          let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-          tickets.push(ticketChunk);
+          tickets = await expo.sendPushNotificationsAsync(chunk);
         } catch (error) {
           console.error(error);
         }
@@ -119,11 +217,47 @@ async function sendMess(req, res) {
       console.log(tickets);
       console.log("====================================");
 
+      let arrData = [];
+      chunks[0].forEach((element, index) => {
+        element.id = tickets[index].id;
+        element.status = tickets[index].status;
+        element.viewed = false;
+        arrData.push(element);
+      });
+
+      // console.log("==================================== chunks");
+      // console.log(chunks);
+      // console.log("====================================");
+
+      // updateNotifyData(req, arrData);
+
       return tickets;
     } else {
       return false;
     }
   } catch (error) {
     return false;
+  }
+}
+
+async function updateNotifyData(req, chunks) {
+  const _keyFirestore = "message_data";
+  try {
+    const collection = await db.collection(_keyFirestore).doc(req.user).get();
+    if (collection.exists) {
+      db.collection(_keyFirestore)
+        .doc(req.user)
+        .update({
+          [chunks[0].title]: chunks,
+        });
+    } else {
+      db.collection(_keyFirestore)
+        .doc(req.user)
+        .set({
+          [chunks[0].title]: chunks,
+        });
+    }
+  } catch (e) {
+    console.error(e);
   }
 }

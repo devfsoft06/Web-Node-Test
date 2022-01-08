@@ -10,15 +10,13 @@
 </head>
 
 <body>
-  <div class="subscribe-container" style="padding: 20px;">
-    <img src="https://i.pinimg.com/originals/67/0b/bc/670bbc8b2507d5f2f0b32f73224e972a.gif" alt="this slowpoke moves" width="250" alt="" />
+  <div style="margin-left: 50px;">
     <div class="row">
+      <img src="https://i.pinimg.com/originals/67/0b/bc/670bbc8b2507d5f2f0b32f73224e972a.gif" width="250"/>
+    </div>
+    <div class="row" style="margin-top: 50px;">
       <label>Data send</label>
       <input type="text" name="txtSend" id="txtSend" placeholder="">
-    </div>
-    <div class="row">
-      <label>Data receive</label>
-      <input type="text" name="txtReceive" id="txtReceive" placeholder="">
     </div>
     <div class="row">
       <button id="btnSendData" onclick="handleSendData(1)">Google</button>
@@ -28,17 +26,39 @@
     <div class="row" style="margin-top: 50px;">
       <div style="margin-top: 20px;">
         <div>
+          <label>User</label>
+          <input type="text" name="txtUser" id="txtUser" value="devfsoft06">
+        </div>
+        <div>
           <label>Tieu de</label>
           <input type="text" name="txtTitle" id="txtTitle" value="Tieu de">
         </div>
         <div>
           <label>Noi dung</label>
-          <input type="text" name="txtContent" id="txtContent" value="Noi dung">
+          <input type="text" name="txtContent" id="txtContent" value="Noi dung:_1">
         </div>
       </div>
       <div class="column" style="margin-top: 20px;">
         <button id="btnSendData" onclick="readFireStore()">Read FireStore</button>
         <button id="btnSendData" onclick="sendMessage()">Send Message</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 50px; margin-bottom: 50px;">
+      <div style="margin-top: 20px;">
+        <div>
+          <label>User</label>
+          <input type="text" name="txtUserFirestore" id="txtUserFirestore" value="devfsoft06">
+        </div>
+        <div>
+          <label>Device</label>
+          <select id="txtDevice">
+            <option value=1>nixphone</option>
+            <option value=2>readmi</option>
+          </select>
+        </div>
+      </div>
+      <div class="column" style="margin-top: 20px;">
+        <button id="btnUpdateData" onclick="updateFireStore()">Update data</button>
       </div>
     </div>
   </div>
@@ -86,12 +106,49 @@
         })
       );
     }
+    
+    document.getElementById("txtSend").value = JSON.stringify(channel);
   }
 
   async function readFireStore (){
     try {
-      const data = await axios.get('http://10.0.12.111:3003/read-firestore')
-      console.log("🚀 ~ file: index.html ~ line 87 ~ readFireStore ~ data", data)
+      const send = await axios.get('http://localhost:4002/expo-test-336102/us-central1/api/read-firestore')
+      console.log('==================================== readFireStore');
+      console.log(send);
+      console.log('====================================');
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  async function updateFireStore (){
+    try {
+      
+      let data = {
+        user: 'devfsoft06',
+        fieldName: '',
+        deviceId: '',
+        devicePush: '',
+        expoPush: ''
+      }
+
+      const type = parseInt(document.getElementById("txtDevice").value);
+      if (type === 1){
+        data.fieldName = 'nixphone'
+        data.deviceId = '7DDA332B-19AE-4820-900C-E325B8994C0C'
+        data.devicePush = '90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15'
+        data.expoPush = 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]'
+      } else {
+        data.fieldName = 'readmi'
+        data.deviceId = '4e1f755c-b148-4708-9eaf-018883a9532e'
+        data.devicePush = '90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15'
+        data.expoPush = 'ExponentPushToken[jaF1hlIbiAHLhZvlNKJh3s]'
+      }
+
+      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/write-firestore', data)
+      console.log('==================================== updateFireStore');
+      console.log(send);
+      console.log('====================================');
     } catch (e) {
       console.error(e)
     }
@@ -100,16 +157,26 @@
   async function sendMessage (){
     try {
       const data = {
+        user: document.getElementById("txtUser").value,
         title: document.getElementById("txtTitle").value,
         content: document.getElementById("txtContent").value
       }
-      const send = await axios.post('http://10.0.12.111:3003/send-mess', data)
+
+      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/api/push-notify', data)
+      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/push-notify', data)
+      // const send = await axios.post('http://localhost:3003/push-notify', data)
       console.log("🚀 ~ file: index.html ~ line 111 ~ sendMessage ~ send", send)
+      if (send && send.status === 200){
+        const title = document.getElementById("txtContent").value;
+        const index = title.indexOf(':_');
+        const num = title.substring(index + 2, index + 3);
+        const val = title.replace(num, (parseInt(num) + 1).toString());
+        document.getElementById("txtContent").value = val;
+      }
     } catch (e) {
       console.error(e)
     }
   }
-
 </script>
 
 </body>
