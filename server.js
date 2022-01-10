@@ -67,12 +67,14 @@ app.post("/push-notify", (req, res) => {
 app.post("/update-notify-status", (req, res) => {
   console.info("update-notify-status ", req.body);
   updateNotifyStatus(req.body, res);
-  res.send(req.body);
 });
 
-async function updateNotifyStatus(req) {
+async function updateNotifyStatus(req, res) {
   const resp = await axios.post("http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status", req);
   console.log("🚀 ~ file: server.js ~ line 75 ~ updateNotifyStatus ~ resp", resp);
+  if (res && res.status === 200) {
+    res.send(resp.data);
+  }
 }
 
 async function handleSignInGoogle(req, res) {
@@ -165,22 +167,24 @@ function handleWriteFile(path, data, res) {
 }
 
 async function readFireStore(res) {
-  // try {
-  //   const citiesRef = db.collection("device-token");
-  //   const snapshot = await citiesRef.get();
-  //   let arr = [];
-  //   snapshot.forEach((doc) => {
-  //     arr.push(doc.data());
-  //   });
-  //   return arr;
-  // } catch (error) {
-  //   return null;
-  // }
+  try {
+    const send = await axios.post("https://us-central1-expo-test-336102.cloudfunctions.net/api/write-firestore", {
+      user: "devfsoft06",
+      fieldName: "nixphone",
+      deviceId: "7DDA332B-19AE-4820-900C-E325B8994C0C",
+      devicePush: "90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15",
+      expoPush: "ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]",
+    });
 
-  console.log("constants ", constants);
-  let data = constants.MY_CONSTANT;
-  console.log("constants ", constants);
-  res.send(data);
+    console.log("==================================== readFireStore");
+    console.log(send);
+    console.log("====================================");
+
+    res.send(send);
+  } catch (e) {
+    console.error("onClickBntTest ", e);
+    res.send(false);
+  }
 }
 
 async function sendMess(req, res) {

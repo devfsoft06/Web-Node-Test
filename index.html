@@ -112,14 +112,16 @@
 
   async function readFireStore (){
     try {
-      const data = {
-        content: {
-          title: 'Tieu de',
-          token: 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]'
-        },
-        identifier: '1231231232312312'
-      }
-      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status', data)
+      // const data = {
+      //   content: {
+      //     title: 'Tieu de',
+      //     token: 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]'
+      //   },
+      //   identifier: '1231231232312312'
+      // }
+      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status', data)
+      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/api/update-notify-status', data)
+      const send = await axios.get("http://localhost:3003/read-firestore")
       console.log('==================================== readFireStore');
       console.log(send);
       console.log('====================================');
@@ -149,10 +151,12 @@
         data.fieldName = 'readmi'
         data.deviceId = '4e1f755c-b148-4708-9eaf-018883a9532e'
         data.devicePush = '90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15'
-        data.expoPush = 'ExponentPushToken[jaF1hlIbiAHLhZvlNKJh3s]'
+        data.expoPush = '9E9WOQMcXTqwck0F3BdRrJ5glWhqOnICNJoGHyV84SuLqafgiMXEb4w71wn'
+        // data.expoPush = 'ExponentPushToken[jaF1hlIbiAHLhZvlNKJh3s]'
       }
 
-      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/write-firestore', data)
+      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/write-firestore', data)
+      const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/write-firestore', data)
       console.log('==================================== updateFireStore');
       console.log(send);
       console.log('====================================');
@@ -169,9 +173,8 @@
         content: document.getElementById("txtContent").value
       }
 
-      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/api/push-notify', data)
-      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/push-notify', data)
-      // const send = await axios.post('http://localhost:3003/push-notify', data)
+      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/push-notify', data)
+      const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/push-notify', data)
       console.log("🚀 ~ file: index.html ~ line 111 ~ sendMessage ~ send", send)
       if (send && send.status === 200){
         const title = document.getElementById("txtContent").value;
