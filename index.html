@@ -112,19 +112,12 @@
 
   async function readFireStore (){
     try {
-      // const data = {
-      //   content: {
-      //     title: 'Tieu de',
-      //     token: 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]'
-      //   },
-      //   identifier: '1231231232312312'
-      // }
       // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status', data)
       // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/api/update-notify-status', data)
-      const send = await axios.get("http://localhost:3003/read-firestore")
-      console.log('==================================== readFireStore');
-      console.log(send);
-      console.log('====================================');
+      // const send = await axios.get("http://localhost:3003/read-firestore")
+      // console.log('==================================== readFireStore');
+      // console.log(send);
+      // console.log('====================================');
     } catch (e) {
       console.error(e)
     }
@@ -136,27 +129,24 @@
       let data = {
         user: 'devfsoft06',
         fieldName: '',
-        deviceId: '',
         devicePush: '',
         expoPush: ''
       };
 
       const type = parseInt(document.getElementById("txtDevice").value);
       if (type === 1){
-        data.fieldName = 'nixphone'
-        data.deviceId = '7DDA332B-19AE-4820-900C-E325B8994C0C'
-        data.devicePush = '90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15'
-        data.expoPush = 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]'
+        data.fieldName = 'nixphone';
+        data.devicePush = '90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15';
+        data.expoPush = 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]';
       } else {
-        data.fieldName = 'readmi'
-        data.deviceId = '4e1f755c-b148-4708-9eaf-018883a9532e'
-        data.devicePush = '90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15'
-        data.expoPush = '9E9WOQMcXTqwck0F3BdRrJ5glWhqOnICNJoGHyV84SuLqafgiMXEb4w71wn'
-        // data.expoPush = 'ExponentPushToken[jaF1hlIbiAHLhZvlNKJh3s]'
+        data.fieldName = 'readmi';
+        data.devicePush = "fd4EkXKvTeWQZWF3teMef3:APA91bHsxtJ9pvG3ejPaL8zb8Mc7iu3Svgy7iAAEnCCjtVMDaBK_RNvzr_lLGBj429z9ep4Sn8Q_69VpququjG1BkNFUB1yK--R-lXrcLtHRRsqO1-0IUwQX91PZSEu__lUeJN7-4r6d";
+        // data.expoPush = 'ExponentPushToken[jaF1hlIbiAHLhZvlNKJh3s]'; // Test
+        data.expoPush = 'ExponentPushToken[D8vK34DV1kcsv3qfgNacg-]';  // Release
       }
 
-      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/write-firestore', data)
-      const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/write-firestore', data)
+      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/write-firestore', data)
+      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/write-firestore', data)
       console.log('==================================== updateFireStore');
       console.log(send);
       console.log('====================================');
@@ -173,8 +163,9 @@
         content: document.getElementById("txtContent").value
       }
 
-      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/push-notify', data)
-      const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/push-notify', data)
+      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/push-notify', data)
+      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/push-notify', data)
+      const send = await axios.post('http://localhost:3003/push-notify', data)
       console.log("🚀 ~ file: index.html ~ line 111 ~ sendMessage ~ send", send)
       if (send && send.status === 200){
         const title = document.getElementById("txtContent").value;

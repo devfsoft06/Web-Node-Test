@@ -9,6 +9,8 @@ const { initializeApp, applicationDefault, cert } = require("firebase-admin/app"
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const constants = require("./global");
 const serviceAccount = require("./serviceAccountKey.json");
+const FCM = require("fcm-node");
+const fcm = new FCM(serviceAccount);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -60,17 +62,19 @@ app.get("/read-firestore", (req, res) => {
 });
 
 app.post("/push-notify", (req, res) => {
-  // console.info("send-mess ", req.body);
-  res.send(sendMess(req.body));
+  console.info("send-mess ", req.body);
+  // res.send(sendMess(req.body));
+  handlePushNotifyFCM(req.body, res);
 });
 
 app.post("/update-notify-status", (req, res) => {
   console.info("update-notify-status ", req.body);
-  updateNotifyStatus(req.body, res);
+  res.send(req.body);
+  //updateNotifyStatus(req.body, res);
 });
 
 async function updateNotifyStatus(req, res) {
-  const resp = await axios.post("http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status", req);
+  const resp = await axios.post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/update-notify-status", req);
   console.log("🚀 ~ file: server.js ~ line 75 ~ updateNotifyStatus ~ resp", resp);
   if (res && res.status === 200) {
     res.send(resp.data);
@@ -275,4 +279,30 @@ async function updateNotifyData(req, chunks) {
   } catch (e) {
     console.error(e);
   }
+}
+
+async function handlePushNotifyFCM(req, res) {
+  const message = {
+    to: "ccmaBwYdRweSnY0twQQp4o:APA91bHb9zlGDfBCeCMbrbgJMQKEMWve4aSX9mwYiScn4XhSNs_Ne9XYVgPVqrDejjp9273gSfHnBHJTdMx8csAo42i9eFrLc9K2wWw2UQ1l8MX6J9y5ckPOhFZDZGgZTwJgSSzugJTh",
+    notification: {
+      title: "Title of your push notification",
+      body: "Body of your push notification",
+    },
+    data: {
+      my_key: "my value",
+      my_another_key: "my another value",
+    },
+  };
+
+  fcm.send(message, function (err, response) {
+    if (err) {
+      console.log("Something has gone wrong!");
+      res.send(false);
+    } else {
+      console.log("==================================== response");
+      console.log(response);
+      console.log("====================================");
+      res.send(response);
+    }
+  });
 }
