@@ -5,23 +5,25 @@ const bodyParser = require("body-parser");
 const app = express();
 const cors = require("cors");
 const { Expo } = require("expo-server-sdk");
-const { initializeApp, applicationDefault, cert } = require("firebase-admin/app");
-const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
-const constants = require("./global");
+// const { initializeApp, applicationDefault, cert } = require("firebase-admin/app");
+// const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const serviceAccount = require("./serviceAccountKey.json");
-const FCM = require("fcm-node");
-const fcm = new FCM(serviceAccount);
+// const FCM = require("fcm-node");
+// const fcm = new FCM(serviceAccount);
+
+const admin = require("firebase-admin");
+admin.initializeApp(serviceAccount);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(cors());
 
-initializeApp({
-  credential: cert(serviceAccount),
-});
+// initializeApp({
+//   credential: cert(serviceAccount),
+// });
 
-const db = getFirestore();
+// const db = getFirestore();
 
 app.listen(3003, () => {
   console.log("Application started and Listening on port 3003");
@@ -63,7 +65,7 @@ app.get("/read-firestore", (req, res) => {
 
 app.post("/push-notify", (req, res) => {
   console.info("send-mess ", req.body);
-  // res.send(sendMess(req.body));
+  // sendMess(req.body, res);
   handlePushNotifyFCM(req.body, res);
 });
 
@@ -193,116 +195,108 @@ async function readFireStore(res) {
 
 async function sendMess(req, res) {
   try {
-    const firestore = await readFireStore();
-    let tokenArr = [];
-    if (firestore) {
-      firestore.forEach((element) => {
-        for (let i in element) {
-          tokenArr.push(element[i].expoPush);
-        }
+    let expo = new Expo();
+    let messages = [];
+    const tokenArr = ["cqEs_cTBRSqB1bxiULPyrH:APA91bFwlv4LqfwfRv-wWjgZqmA4gAjyW9ifRUEFQZ1Jzcrk1ZoUEsZ_RlIZ4mIybpy6-NOspvo_9hJ-Gjr7rN-rTaewc_-l_v9-fKbkbZf81SuO-BEAoTBv8oVFNJzTlF393t2Pg2kN"];
+    for (let pushToken of tokenArr) {
+      // if (!Expo.isExpoPushToken(pushToken)) {
+      //   console.error(`Push token ${pushToken} is not a valid Expo push token`);
+      //   continue;
+      // }
+
+      messages.push({
+        to: pushToken,
+        sound: "default",
+        title: req.title,
+        body: req.content,
+        data: {
+          device: "Nokia 1020",
+          token: pushToken,
+        },
       });
-
-      let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
-      let messages = [];
-      for (let pushToken of tokenArr) {
-        if (!Expo.isExpoPushToken(pushToken)) {
-          console.error(`Push token ${pushToken} is not a valid Expo push token`);
-          continue;
-        }
-
-        messages.push({
-          to: pushToken,
-          sound: "default",
-          title: req.title,
-          body: req.content,
-          data: {
-            device: "Nokia 1020",
-            token: pushToken,
-          },
-        });
-      }
-
-      let tickets = [];
-      const chunks = expo.chunkPushNotifications(messages);
-      for (let chunk of chunks) {
-        try {
-          tickets = await expo.sendPushNotificationsAsync(chunk);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-      console.log("==================================== tickets");
-      console.log(tickets);
-      console.log("====================================");
-
-      let arrData = [];
-      chunks[0].forEach((element, index) => {
-        element.id = tickets[index].id;
-        element.status = tickets[index].status;
-        element.viewed = false;
-        arrData.push(element);
-      });
-
-      // console.log("==================================== chunks");
-      // console.log(chunks);
-      // console.log("====================================");
-
-      // updateNotifyData(req, arrData);
-
-      return tickets;
-    } else {
-      return false;
     }
+
+    let tickets = [];
+    const chunks = expo.chunkPushNotifications(messages);
+    for (let chunk of chunks) {
+      try {
+        tickets = await expo.sendPushNotificationsAsync(chunk);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    console.log("==================================== tickets");
+    console.log(tickets);
+    console.log("====================================");
+
+    res.send(tickets);
   } catch (error) {
-    return false;
+    res.send(false);
   }
 }
 
 async function updateNotifyData(req, chunks) {
   const _keyFirestore = "message_data";
   try {
-    const collection = await db.collection(_keyFirestore).doc(req.user).get();
-    if (collection.exists) {
-      db.collection(_keyFirestore)
-        .doc(req.user)
-        .update({
-          [chunks[0].title]: chunks,
-        });
-    } else {
-      db.collection(_keyFirestore)
-        .doc(req.user)
-        .set({
-          [chunks[0].title]: chunks,
-        });
-    }
+    // const collection = await db.collection(_keyFirestore).doc(req.user).get();
+    // if (collection.exists) {
+    //   db.collection(_keyFirestore)
+    //     .doc(req.user)
+    //     .update({
+    //       [chunks[0].title]: chunks,
+    //     });
+    // } else {
+    //   db.collection(_keyFirestore)
+    //     .doc(req.user)
+    //     .set({
+    //       [chunks[0].title]: chunks,
+    //     });
+    // }
   } catch (e) {
     console.error(e);
   }
 }
 
 async function handlePushNotifyFCM(req, res) {
-  const message = {
-    to: "ccmaBwYdRweSnY0twQQp4o:APA91bHb9zlGDfBCeCMbrbgJMQKEMWve4aSX9mwYiScn4XhSNs_Ne9XYVgPVqrDejjp9273gSfHnBHJTdMx8csAo42i9eFrLc9K2wWw2UQ1l8MX6J9y5ckPOhFZDZGgZTwJgSSzugJTh",
-    notification: {
-      title: "Title of your push notification",
-      body: "Body of your push notification",
-    },
-    data: {
-      my_key: "my value",
-      my_another_key: "my another value",
-    },
-  };
+  // const message = {
+  //   to: "cqEs_cTBRSqB1bxiULPyrH:APA91bFwlv4LqfwfRv-wWjgZqmA4gAjyW9ifRUEFQZ1Jzcrk1ZoUEsZ_RlIZ4mIybpy6-NOspvo_9hJ-Gjr7rN-rTaewc_-l_v9-fKbkbZf81SuO-BEAoTBv8oVFNJzTlF393t2Pg2kN",
+  //   data: {
+  //     title: req.title,
+  //     message: req.content,
+  //   },
+  // };
+  // fcm.send(message, function (err, response) {
+  //   if (err) {
+  //     console.log("Something has gone wrong!");
+  //     res.send(false);
+  //   } else {
+  //     console.log("==================================== response");
+  //     console.log(response);
+  //     console.log("====================================");
+  //     res.send(response);
+  //   }
+  // });
 
-  fcm.send(message, function (err, response) {
-    if (err) {
-      console.log("Something has gone wrong!");
-      res.send(false);
-    } else {
-      console.log("==================================== response");
-      console.log(response);
-      console.log("====================================");
-      res.send(response);
-    }
-  });
+  try {
+    const token = "y0HFW5xQIuimTNhumcM4d:APA91bHIiS0OSvD-vcB2DV2lnpnD1G0lB-nElR_yqTu_HuWrIkedfQmjEHKkCxmk4vXrt7m_sgaqMLVnCNCrKKmpdBfiW4Ujjoqey6I8hBm6xQWxTXZmCX6PDVt-PQWrUxiuzW9RPkZR";
+    const payload = {
+      notification: {
+        title: req.title,
+        body: req.content,
+      },
+      data: {
+        body: "123231232",
+      },
+    };
+
+    const send = await admin.messaging().sendToDevice(token, payload);
+    console.log("====================================");
+    console.log(send);
+    console.log("====================================");
+
+    res.send(send);
+  } catch (e) {
+    res.send(e.toString());
+  }
 }

@@ -54,6 +54,7 @@
           <select id="txtDevice">
             <option value=1>nixphone</option>
             <option value=2>readmi</option>
+            <option value=3>pixel</option>
           </select>
         </div>
       </div>
@@ -112,12 +113,12 @@
 
   async function readFireStore (){
     try {
-      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/api/update-notify-status', data)
+      const data = await axios.get('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/read-firestore')
       // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/api/update-notify-status', data)
       // const send = await axios.get("http://localhost:3003/read-firestore")
-      // console.log('==================================== readFireStore');
-      // console.log(send);
-      // console.log('====================================');
+      console.log('==================================== readFireStore');
+      console.log(data);
+      console.log('====================================');
     } catch (e) {
       console.error(e)
     }
@@ -138,11 +139,14 @@
         data.fieldName = 'nixphone';
         data.devicePush = '90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15';
         data.expoPush = 'ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]';
-      } else {
-        data.fieldName = 'readmi';
+      } else if (type === 2) {
+        data.fieldName = 'M2101K7AG';
         data.devicePush = "fd4EkXKvTeWQZWF3teMef3:APA91bHsxtJ9pvG3ejPaL8zb8Mc7iu3Svgy7iAAEnCCjtVMDaBK_RNvzr_lLGBj429z9ep4Sn8Q_69VpququjG1BkNFUB1yK--R-lXrcLtHRRsqO1-0IUwQX91PZSEu__lUeJN7-4r6d";
-        // data.expoPush = 'ExponentPushToken[jaF1hlIbiAHLhZvlNKJh3s]'; // Test
         data.expoPush = 'ExponentPushToken[D8vK34DV1kcsv3qfgNacg-]';  // Release
+      } else {
+        data.fieldName = 'Pixel 2';
+        data.devicePush = "fz18kHiASbi412DPIBPLXD:APA91bF7J4Yy5X9fyj7gtEUkE9I0jFsHGKHRODWzrBN4xv9YF_IkERMayRT4cBpHYVn3RCdOcKyxYCnk28y6H-Ww_6GOtZwZqSLVPXVrxZpHmkwB0IhIob1SYvnX91bvDoBj0uKhKb2i";
+        data.expoPush = 'ExponentPushToken[owUR2lI9A33V8gbK7uheog]';  // Release
       }
 
       const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/write-firestore', data)
@@ -164,8 +168,8 @@
       }
 
       // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/push-notify', data)
-      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/push-notify', data)
-      const send = await axios.post('http://localhost:3003/push-notify', data)
+      const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/push-notify', data)
+      // const send = await axios.post('http://localhost:3003/push-notify', data)
       console.log("🚀 ~ file: index.html ~ line 111 ~ sendMessage ~ send", send)
       if (send && send.status === 200){
         const title = document.getElementById("txtContent").value;
