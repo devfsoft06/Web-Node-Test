@@ -5,23 +5,25 @@ const bodyParser = require("body-parser");
 const app = express();
 const cors = require("cors");
 const { Expo } = require("expo-server-sdk");
-// const { initializeApp, applicationDefault, cert } = require("firebase-admin/app");
+const { initializeApp, applicationDefault, cert } = require("firebase-admin/app");
 // const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
-const serviceAccount = require("./serviceAccountKey.json");
-// const FCM = require("fcm-node");
-// const fcm = new FCM(serviceAccount);
+const { getMessaging } = require("firebase-admin/messaging");
+// const serviceAccount = require("./expofeature-serviceAccountKey.json");
+const serviceAccount = require("./exponotify-serviceAccountKey.json");
+const FCM = require("fcm-node");
+const fcm = new FCM(serviceAccount);
 
-const admin = require("firebase-admin");
-admin.initializeApp(serviceAccount);
+// const admin = require("firebase-admin");
+// admin.initializeApp(serviceAccount);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(cors());
 
-// initializeApp({
-//   credential: cert(serviceAccount),
-// });
+initializeApp({
+  credential: cert(serviceAccount),
+});
 
 // const db = getFirestore();
 
@@ -259,43 +261,74 @@ async function updateNotifyData(req, chunks) {
 }
 
 async function handlePushNotifyFCM(req, res) {
-  // const message = {
-  //   to: "cqEs_cTBRSqB1bxiULPyrH:APA91bFwlv4LqfwfRv-wWjgZqmA4gAjyW9ifRUEFQZ1Jzcrk1ZoUEsZ_RlIZ4mIybpy6-NOspvo_9hJ-Gjr7rN-rTaewc_-l_v9-fKbkbZf81SuO-BEAoTBv8oVFNJzTlF393t2Pg2kN",
-  //   data: {
-  //     title: req.title,
-  //     message: req.content,
-  //   },
-  // };
-  // fcm.send(message, function (err, response) {
-  //   if (err) {
-  //     console.log("Something has gone wrong!");
-  //     res.send(false);
-  //   } else {
-  //     console.log("==================================== response");
-  //     console.log(response);
-  //     console.log("====================================");
-  //     res.send(response);
-  //   }
-  // });
+  const token = "dsJGyASkQxqfOJp2cLf4Nj:APA91bH8aqbaIlgJJPCOQSr6RlpAOSu-OEJpm7lepYCqD5VmUJR5t9X5cu4CS746m1YNoIYrY0fW4RAkK5SxVLLKnUyjec01eoqqrg-LhmXXZSNDYQAPoLIXU4MPRqZuWU8SU30tfMXL";
+
+  // try {
+  //   const message = {
+  //     to: token,
+  //     data: {
+  //       title: req.title,
+  //       message: req.content,
+  //     },
+  //   };
+
+  //   fcm.send(message, function (err, response) {
+  //     if (err) {
+  //       console.log("Something has gone wrong!");
+  //       res.send(err.toString());
+  //     } else {
+  //       console.log("==================================== response");
+  //       console.log(response);
+  //       console.log("====================================");
+  //       res.send(response);
+  //     }
+  //   });
+  // } catch (e) {
+  //   res.send(e.toString());
+  // }
+
+  // try {
+  //   const token = token;
+  //   const payload = {
+  //     notification: {
+  //       title: req.title,
+  //       body: req.content,
+  //     },
+  //     data: {
+  //       body: "123231232",
+  //     },
+  //   };
+
+  //   const send = await admin.messaging().sendToDevice(token, payload);
+  //   console.log("====================================");
+  //   console.log(send);
+  //   console.log("====================================");
+
+  //   res.send(send);
+  // } catch (e) {
+  //   res.send(e.toString());
+  // }
 
   try {
-    const token = "y0HFW5xQIuimTNhumcM4d:APA91bHIiS0OSvD-vcB2DV2lnpnD1G0lB-nElR_yqTu_HuWrIkedfQmjEHKkCxmk4vXrt7m_sgaqMLVnCNCrKKmpdBfiW4Ujjoqey6I8hBm6xQWxTXZmCX6PDVt-PQWrUxiuzW9RPkZR";
-    const payload = {
+    const message = {
       notification: {
         title: req.title,
         body: req.content,
       },
-      data: {
-        body: "123231232",
-      },
+      data: { score: "850", time: "2:45" },
+      token: token,
     };
 
-    const send = await admin.messaging().sendToDevice(token, payload);
-    console.log("====================================");
-    console.log(send);
-    console.log("====================================");
-
-    res.send(send);
+    getMessaging()
+      .send(message)
+      .then((response) => {
+        console.log("Successfully sent message:", response);
+        res.send(response);
+      })
+      .catch((error) => {
+        console.log("Error sending message:", error);
+        res.send(error.toString());
+      });
   } catch (e) {
     res.send(e.toString());
   }
