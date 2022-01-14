@@ -6,12 +6,11 @@ const app = express();
 const cors = require("cors");
 const { Expo } = require("expo-server-sdk");
 const { initializeApp, applicationDefault, cert } = require("firebase-admin/app");
-// const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
+const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
-// const serviceAccount = require("./expofeature-serviceAccountKey.json");
-const serviceAccount = require("./exponotify-serviceAccountKey.json");
-const FCM = require("fcm-node");
-const fcm = new FCM(serviceAccount);
+const serviceAccount = require("./serviceAccountKey.json");
+// const FCM = require("fcm-node");
+// const fcm = new FCM(serviceAccount);
 
 // const admin = require("firebase-admin");
 // admin.initializeApp(serviceAccount);
@@ -67,8 +66,8 @@ app.get("/read-firestore", (req, res) => {
 
 app.post("/push-notify", (req, res) => {
   console.info("send-mess ", req.body);
-  // sendMess(req.body, res);
-  handlePushNotifyFCM(req.body, res);
+  handlePushNotifySdk(req.body, res);
+  // handlePushNotifyFCM(req.body, res);
 });
 
 app.post("/update-notify-status", (req, res) => {
@@ -195,11 +194,11 @@ async function readFireStore(res) {
   }
 }
 
-async function sendMess(req, res) {
+async function handlePushNotifySdk(req, res) {
   try {
     let expo = new Expo();
     let messages = [];
-    const tokenArr = ["cqEs_cTBRSqB1bxiULPyrH:APA91bFwlv4LqfwfRv-wWjgZqmA4gAjyW9ifRUEFQZ1Jzcrk1ZoUEsZ_RlIZ4mIybpy6-NOspvo_9hJ-Gjr7rN-rTaewc_-l_v9-fKbkbZf81SuO-BEAoTBv8oVFNJzTlF393t2Pg2kN"];
+    const tokenArr = ["eaVdn-SeR_esqfeMj7g4cw:APA91bFSZ3rTt-A039oecxfu9ravVgjoSp3RBLMgARAP46krFStydxCewpa8vT-HTu5tW4Ip-kpwcJofbs2J2B0Skcqn1wu6JRH0g7ZO2VjqFgMdn4wLdUlyTinkWEqoKFVnDEc6jIJ3"];
     for (let pushToken of tokenArr) {
       // if (!Expo.isExpoPushToken(pushToken)) {
       //   console.error(`Push token ${pushToken} is not a valid Expo push token`);
@@ -261,54 +260,7 @@ async function updateNotifyData(req, chunks) {
 }
 
 async function handlePushNotifyFCM(req, res) {
-  const token = "dsJGyASkQxqfOJp2cLf4Nj:APA91bH8aqbaIlgJJPCOQSr6RlpAOSu-OEJpm7lepYCqD5VmUJR5t9X5cu4CS746m1YNoIYrY0fW4RAkK5SxVLLKnUyjec01eoqqrg-LhmXXZSNDYQAPoLIXU4MPRqZuWU8SU30tfMXL";
-
-  // try {
-  //   const message = {
-  //     to: token,
-  //     data: {
-  //       title: req.title,
-  //       message: req.content,
-  //     },
-  //   };
-
-  //   fcm.send(message, function (err, response) {
-  //     if (err) {
-  //       console.log("Something has gone wrong!");
-  //       res.send(err.toString());
-  //     } else {
-  //       console.log("==================================== response");
-  //       console.log(response);
-  //       console.log("====================================");
-  //       res.send(response);
-  //     }
-  //   });
-  // } catch (e) {
-  //   res.send(e.toString());
-  // }
-
-  // try {
-  //   const token = token;
-  //   const payload = {
-  //     notification: {
-  //       title: req.title,
-  //       body: req.content,
-  //     },
-  //     data: {
-  //       body: "123231232",
-  //     },
-  //   };
-
-  //   const send = await admin.messaging().sendToDevice(token, payload);
-  //   console.log("====================================");
-  //   console.log(send);
-  //   console.log("====================================");
-
-  //   res.send(send);
-  // } catch (e) {
-  //   res.send(e.toString());
-  // }
-
+  const token = "eaVdn-SeR_esqfeMj7g4cw:APA91bFSZ3rTt-A039oecxfu9ravVgjoSp3RBLMgARAP46krFStydxCewpa8vT-HTu5tW4Ip-kpwcJofbs2J2B0Skcqn1wu6JRH0g7ZO2VjqFgMdn4wLdUlyTinkWEqoKFVnDEc6jIJ3";
   try {
     const message = {
       notification: {

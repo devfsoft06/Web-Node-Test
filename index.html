@@ -167,9 +167,9 @@
         content: document.getElementById("txtContent").value
       }
 
-      // const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/push-notify', data)
       // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/push-notify', data)
-      const send = await axios.post('http://localhost:3003/push-notify', data)
+      // const send = await axios.post('http://localhost:3003/push-notify', data)
+      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/push-notify', data)
       console.log("🚀 ~ file: index.html ~ line 111 ~ sendMessage ~ send", send)
       if (send && send.status === 200){
         const title = document.getElementById("txtContent").value;
