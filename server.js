@@ -50,7 +50,7 @@ app.get("/webview-config-url", function (req, res) {
   console.log("webview-config-url");
   // res.send("https://coinmarketcap.com/");
   // res.send("https://www.binance.com/vi/trade/BTC_USDT");
-  res.send("http://10.0.12.111:3003");
+  res.send("http://localhost:3003");
   // res.send("https://www.mexc.com/exchange/RACA_USDT");
 });
 
@@ -64,25 +64,138 @@ app.get("/read-firestore", (req, res) => {
   readFireStore(res);
 });
 
-app.post("/push-notify", (req, res) => {
-  console.info("send-mess ", req.body);
-  handlePushNotifySdk(req.body, res);
-  // handlePushNotifyFCM(req.body, res);
-});
+app.post("/push-notify", async (req, res) => {
+  console.log("==================================== push-notify: req.body");
+  console.log(req.body);
+  console.log("====================================");
 
-app.post("/update-notify-status", (req, res) => {
-  console.info("update-notify-status ", req.body);
-  res.send(req.body);
-  //updateNotifyStatus(req.body, res);
-});
+  try {
+    axios
+      .post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/push-notify", req.body)
+      .then((response) => {
+        if (response && response.status === 200) {
+          console.log("====================================push-notify: response");
+          console.log(response);
+          console.log("====================================");
 
-async function updateNotifyStatus(req, res) {
-  const resp = await axios.post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/update-notify-status", req);
-  console.log("🚀 ~ file: server.js ~ line 75 ~ updateNotifyStatus ~ resp", resp);
-  if (res && res.status === 200) {
-    res.send(resp.data);
+          res.send({
+            status: true,
+            data: response.data,
+          });
+        } else {
+          res.send({
+            status: false,
+            data: {},
+          });
+        }
+      })
+      .catch((err) => {
+        res.send({
+          status: false,
+          data: {},
+          msg: err.toString(),
+        });
+      });
+  } catch (e) {
+    console.log("==================================== push-notify: catch");
+    console.log(e);
+    console.log("====================================");
+
+    res.send({
+      status: false,
+      data: {},
+      msg: e.toString(),
+    });
   }
-}
+});
+
+app.post("/update-notify-data", async (req, res) => {
+  console.log("==================================== update-notify-data: req.body");
+  console.log(req.body);
+  console.log("====================================");
+  try {
+    axios
+      .post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/update-notify-data", req.body)
+      .then((response) => {
+        console.log("==================================== update-notify-data: response");
+        console.log(response);
+        console.log("====================================");
+
+        if (response && response.status === 200) {
+          res.send({
+            status: true,
+            data: response.data,
+          });
+        } else {
+          res.send({
+            status: false,
+            data: {},
+          });
+        }
+      })
+      .catch((err) => {
+        res.send({
+          status: false,
+          data: {},
+          msg: err.toString(),
+        });
+      });
+  } catch (e) {
+    console.log("==================================== update-notify-data: catch");
+    console.log(e);
+    console.log("====================================");
+
+    res.send({
+      status: false,
+      data: {},
+      msg: e.toString(),
+    });
+  }
+});
+
+app.post("/update-notify-status", async (req, res) => {
+  console.log("==================================== update-notify-status: req.body");
+  console.log(req.body);
+  console.log("====================================");
+  try {
+    axios
+      .post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/update-notify-status", req.body)
+      .then((response) => {
+        console.log("==================================== update-notify-status: response");
+        console.log(response);
+        console.log("====================================");
+
+        if (response && response.status === 200) {
+          res.send({
+            status: true,
+            data: response.data,
+          });
+        } else {
+          res.send({
+            status: false,
+            data: {},
+          });
+        }
+      })
+      .catch((err) => {
+        res.send({
+          status: false,
+          data: {},
+          msg: err.toString(),
+        });
+      });
+  } catch (e) {
+    console.log("==================================== update-notify-status: catch");
+    console.log(e);
+    console.log("====================================");
+
+    res.send({
+      status: false,
+      data: {},
+      msg: e.toString(),
+    });
+  }
+});
 
 async function handleSignInGoogle(req, res) {
   try {
@@ -171,117 +284,4 @@ function handleWriteFile(path, data, res) {
       msg: "Database is empty",
     });
   });
-}
-
-async function readFireStore(res) {
-  try {
-    const send = await axios.post("https://us-central1-expo-test-336102.cloudfunctions.net/api/write-firestore", {
-      user: "devfsoft06",
-      fieldName: "nixphone",
-      deviceId: "7DDA332B-19AE-4820-900C-E325B8994C0C",
-      devicePush: "90f0d83c2576727eea7816b3a153741de321cf362cabb14721c409de8a87cc15",
-      expoPush: "ExponentPushToken[gh3ouKEdYC3FqRVn3P4cFa]",
-    });
-
-    console.log("==================================== readFireStore");
-    console.log(send);
-    console.log("====================================");
-
-    res.send(send);
-  } catch (e) {
-    console.error("onClickBntTest ", e);
-    res.send(false);
-  }
-}
-
-async function handlePushNotifySdk(req, res) {
-  try {
-    let expo = new Expo();
-    let messages = [];
-    const tokenArr = ["eaVdn-SeR_esqfeMj7g4cw:APA91bFSZ3rTt-A039oecxfu9ravVgjoSp3RBLMgARAP46krFStydxCewpa8vT-HTu5tW4Ip-kpwcJofbs2J2B0Skcqn1wu6JRH0g7ZO2VjqFgMdn4wLdUlyTinkWEqoKFVnDEc6jIJ3"];
-    for (let pushToken of tokenArr) {
-      // if (!Expo.isExpoPushToken(pushToken)) {
-      //   console.error(`Push token ${pushToken} is not a valid Expo push token`);
-      //   continue;
-      // }
-
-      messages.push({
-        to: pushToken,
-        sound: "default",
-        title: req.title,
-        body: req.content,
-        data: {
-          device: "Nokia 1020",
-          token: pushToken,
-        },
-      });
-    }
-
-    let tickets = [];
-    const chunks = expo.chunkPushNotifications(messages);
-    for (let chunk of chunks) {
-      try {
-        tickets = await expo.sendPushNotificationsAsync(chunk);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    console.log("==================================== tickets");
-    console.log(tickets);
-    console.log("====================================");
-
-    res.send(tickets);
-  } catch (error) {
-    res.send(false);
-  }
-}
-
-async function updateNotifyData(req, chunks) {
-  const _keyFirestore = "message_data";
-  try {
-    // const collection = await db.collection(_keyFirestore).doc(req.user).get();
-    // if (collection.exists) {
-    //   db.collection(_keyFirestore)
-    //     .doc(req.user)
-    //     .update({
-    //       [chunks[0].title]: chunks,
-    //     });
-    // } else {
-    //   db.collection(_keyFirestore)
-    //     .doc(req.user)
-    //     .set({
-    //       [chunks[0].title]: chunks,
-    //     });
-    // }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-async function handlePushNotifyFCM(req, res) {
-  const token = "eaVdn-SeR_esqfeMj7g4cw:APA91bFSZ3rTt-A039oecxfu9ravVgjoSp3RBLMgARAP46krFStydxCewpa8vT-HTu5tW4Ip-kpwcJofbs2J2B0Skcqn1wu6JRH0g7ZO2VjqFgMdn4wLdUlyTinkWEqoKFVnDEc6jIJ3";
-  try {
-    const message = {
-      notification: {
-        title: req.title,
-        body: req.content,
-      },
-      data: { score: "850", time: "2:45" },
-      token: token,
-    };
-
-    getMessaging()
-      .send(message)
-      .then((response) => {
-        console.log("Successfully sent message:", response);
-        res.send(response);
-      })
-      .catch((error) => {
-        console.log("Error sending message:", error);
-        res.send(error.toString());
-      });
-  } catch (e) {
-    res.send(e.toString());
-  }
 }

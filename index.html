@@ -40,7 +40,7 @@
       </div>
       <div class="column" style="margin-top: 20px;">
         <button id="btnSendData" onclick="readFireStore()">Read FireStore</button>
-        <button id="btnSendData" onclick="sendMessage()">Send Message</button>
+        <button id="btnSendData" onclick="handlePushNotify()">Send Message</button>
       </div>
     </div>
     <div class="row" style="margin-top: 50px; margin-bottom: 50px;">
@@ -113,9 +113,9 @@
 
   async function readFireStore (){
     try {
-      const data = await axios.get('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/read-firestore')
+      const data = await axios.get('http://10.0.12.111:4002/expo-test-336102/us-central1/app/api/v1/read-firestore')
       // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/api/update-notify-status', data)
-      // const send = await axios.get("http://localhost:3003/read-firestore")
+      // const send = await axios.get("http://10.0.12.111:3003/read-firestore")
       console.log('==================================== readFireStore');
       console.log(data);
       console.log('====================================');
@@ -149,17 +149,16 @@
         data.expoPush = 'ExponentPushToken[AKr900CpRjk0xp-3g-FoPS]'; 
       }
 
-      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/write-firestore', data)
-      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/write-firestore', data)
-      console.log('==================================== updateFireStore');
-      console.log(send);
+      const response = await axios.post('http://10.0.12.111:4002/expo-test-336102/us-central1/app/api/v1/write-firestore', data)
+      console.log('==================================== handlePushNotify');
+      console.log(response);
       console.log('====================================');
     } catch (e) {
       console.error(e)
     }
   }
 
-  async function sendMessage (){
+  async function handlePushNotify (){
     try {
       const data = {
         user: document.getElementById("txtUser").value,
@@ -167,11 +166,13 @@
         content: document.getElementById("txtContent").value
       }
 
-      // const send = await axios.post('https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/push-notify', data)
-      // const send = await axios.post('http://localhost:3003/push-notify', data)
-      const send = await axios.post('http://localhost:4002/expo-test-336102/us-central1/app/api/v1/push-notify', data)
-      console.log("🚀 ~ file: index.html ~ line 111 ~ sendMessage ~ send", send)
-      if (send && send.status === 200){
+      const response = await axios.post('http://localhost:3003/push-notify', data)
+      console.log('==================================== handlePushNotify');
+      console.log(response);
+      console.log('====================================');
+
+
+      if (response && response.status === 200){
         const title = document.getElementById("txtContent").value;
         const index = title.indexOf(':_');
         const num = title.substring(index + 2, index + 3);
