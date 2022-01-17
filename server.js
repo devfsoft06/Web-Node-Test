@@ -9,11 +9,8 @@ const { initializeApp, applicationDefault, cert } = require("firebase-admin/app"
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
 const serviceAccount = require("./serviceAccountKey.json");
-// const FCM = require("fcm-node");
-// const fcm = new FCM(serviceAccount);
-
-// const admin = require("firebase-admin");
-// admin.initializeApp(serviceAccount);
+// const _uri = "http://localhost:4002/expo-test-336102/us-central1/app/api/v1/";
+const _uri = "https://us-central1-expo-test-336102.cloudfunctions.net/app/api/v1/";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -71,7 +68,7 @@ app.post("/push-notify", async (req, res) => {
 
   try {
     axios
-      .post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/push-notify", req.body)
+      .post(_uri + "push-notify", req.body)
       .then((response) => {
         if (response && response.status === 200) {
           console.log("====================================push-notify: response");
@@ -115,7 +112,7 @@ app.post("/update-notify-data", async (req, res) => {
   console.log("====================================");
   try {
     axios
-      .post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/update-notify-data", req.body)
+      .post(_uri + "update-notify-data", req.body)
       .then((response) => {
         console.log("==================================== update-notify-data: response");
         console.log(response);
@@ -159,7 +156,7 @@ app.post("/update-notify-status", async (req, res) => {
   console.log("====================================");
   try {
     axios
-      .post("http://localhost:4002/expo-test-336102/us-central1/app/api/v1/update-notify-status", req.body)
+      .post(_uri + "update-notify-status", req.body)
       .then((response) => {
         console.log("==================================== update-notify-status: response");
         console.log(response);
