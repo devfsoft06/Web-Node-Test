@@ -195,6 +195,10 @@ app.post("/update-notify-status", async (req, res) => {
 });
 
 async function handleSignInGoogle(req, res) {
+  console.log("==================================== handleSignInGoogle");
+  console.log(req);
+  console.log("====================================");
+
   try {
     const userInfo = await axios.get("https://www.googleapis.com/userinfo/v2/me", {
       headers: { Authorization: `Bearer ${req.token}` },
@@ -216,10 +220,10 @@ async function handleSignInGoogle(req, res) {
           arr.forEach((element) => {
             console.log("==================================== element");
             console.log(element);
-            console.log("==================================== req.user.email");
-            console.log(req.user.email);
+            console.log("==================================== req.email");
+            console.log(req.email);
 
-            if (element.user.email === req.user.email) {
+            if (element.email === req.email) {
               flagExist = true;
             }
           });
@@ -235,8 +239,8 @@ async function handleSignInGoogle(req, res) {
           res.send({
             status: true,
             jwt: "1234567890",
-            uri: "home",
-            email: req.user.email,
+            uri: "http://10.0.12.111:3003/home",
+            email: req.email,
             msg: "User has exist",
           });
         } else {
@@ -276,8 +280,8 @@ function handleWriteFile(path, data, res) {
     res.send({
       status: true,
       jwt: "1234567890",
-      uri: "home",
-      email: data.user.email,
+      uri: "http://10.0.12.111:3003/home",
+      email: data.email,
       msg: "Database is empty",
     });
   });

@@ -81,34 +81,36 @@
 
   function handleSendData(type) {
     console.info('---> handleSendData')
-    let channel = '';
+    let data = {
+      event: 'login',
+      type: 0
+    };
     switch (type) {
       case 1:
-        channel = 'google_login';
+        data.type = 1;
         break;
       case 2:
-        channel = 'apple_login';
+        data.type = 2;
         break;
       case 3:
-        channel = 'biometric_login';
+        data.type = 3;
         break;
     
       default:
-        channel = 'google_login';
         break;
     }
 
-    console.info('channel ', channel)
+    console.info('data ', data)
     
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(
         JSON.stringify({
-          channel: channel,
+          data: data,
         })
       );
     }
     
-    document.getElementById("txtSend").value = JSON.stringify(channel);
+    document.getElementById("txtSend").value = JSON.stringify(data);
   }
 
   async function readFireStore (){
