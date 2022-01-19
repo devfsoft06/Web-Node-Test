@@ -39,6 +39,14 @@ app.get("/home", (req, res) => {
   res.sendFile(__dirname + "/home.html");
 });
 
+app.post("/transfer", (req, res) => {
+  console.info("transfer ", req.body);
+  res.send({
+    status: true,
+    data: "http://10.0.12.111:3003/transfer",
+  });
+});
+
 app.post("/", (req, res) => {
   res.send("Thank you for subscribing");
 });
@@ -53,6 +61,11 @@ app.get("/webview-config-url", function (req, res) {
 
 app.post("/google_login", (req, res) => {
   console.info("google_login ", req.body);
+  handleSignInGoogle(req.body, res);
+});
+
+app.post("/apple_login", (req, res) => {
+  console.info("apple_login ", req.body);
   handleSignInGoogle(req.body, res);
 });
 
@@ -286,3 +299,5 @@ function handleWriteFile(path, data, res) {
     });
   });
 }
+
+async function handleAppleLogin(params) {}

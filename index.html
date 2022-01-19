@@ -23,6 +23,11 @@
       <button id="btnSendData" onclick="handleSendData(2)">Apple</button>
       <button id="btnSendData" onclick="handleSendData(3)">Biometric</button>
     </div>
+    <div class="row" style="margin-top: 20px;">
+      <button id="btnSendData" onclick="handleSendData(4)">Barcode</button>
+      <button id="btnSendData" onclick="">None</button>
+      <button id="btnSendData" onclick="">None</button>
+    </div>
     <div class="row" style="margin-top: 50px;">
       <div style="margin-top: 20px;">
         <div>
@@ -94,6 +99,10 @@
         break;
       case 3:
         data.type = 3;
+        break;
+
+      case 4:
+        data.type = 4;
         break;
     
       default:
