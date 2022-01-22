@@ -57,6 +57,7 @@ app.get("/webview-config-url", function (req, res) {
   // res.send("https://www.binance.com/vi/trade/BTC_USDT");
   res.send("http://localhost:3003");
   // res.send("https://www.mexc.com/exchange/RACA_USDT");
+  // res.send("https://coinstock.news/my-account");
 });
 
 app.post("/google_login", (req, res) => {
@@ -216,6 +217,10 @@ async function handleSignInGoogle(req, res) {
     const userInfo = await axios.get("https://www.googleapis.com/userinfo/v2/me", {
       headers: { Authorization: `Bearer ${req.token}` },
     });
+
+    console.log("==================================== userInfo");
+    console.log(userInfo.data);
+    console.log("====================================");
 
     if (userInfo && userInfo.status === 200) {
       fs.readFile("./db.txt", "utf8", (err, database) => {

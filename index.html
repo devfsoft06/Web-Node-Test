@@ -94,9 +94,11 @@
       case 1:
         data.type = 1;
         break;
+        
       case 2:
         data.type = 2;
         break;
+
       case 3:
         data.type = 3;
         break;
@@ -113,11 +115,11 @@
     
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(
-        JSON.stringify({
-          data: data,
-        })
+        JSON.stringify(data)
       );
     }
+
+    
     
     document.getElementById("txtSend").value = JSON.stringify(data);
   }
