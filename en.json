@@ -1,0 +1,46 @@
+{
+  "biometric": {
+    "ERR00": {
+      "content": "Authentic failure. Please try again.",
+      "title": "Error"
+    },
+    "ERR01": {
+      "content": "Biometric authentication fails. Please try again",
+      "title": "Error"
+    },
+    "ERR02": {
+      "content": "The device does not support.",
+      "title": "Error"
+    },
+    "ERR03": {
+      "content": "The device does not support.",
+      "title": "Error"
+    },
+    "ERR04": {
+      "content": "The device has not yet established biometrics.Please check again in the System Settings section.",
+      "title": "Error"
+    }
+  },
+  "network": {
+    "content": "Please check the network on your device. Try closing the application and reopening.",
+    "title": "Warning"
+  },
+  "permissionNotify": {
+    "content": "There is no right to receive notifications. Try closing the application and reopening.",
+    "title": "Error"
+  },
+  "socialLogin": {
+    "google": {
+      "content": "Login failed. Please try again.",
+      "title": "Error"
+    }
+  },
+  "update": {
+    "content": "Application has a new version.Please select OK to update.",
+    "title": "Notify"
+  },
+  "webviewErr": {
+    "content": "Please check the network on your device. Try closing the application and reopening.",
+    "title": "Error"
+  }
+}

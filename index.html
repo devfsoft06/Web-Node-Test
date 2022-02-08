@@ -10,9 +10,9 @@
 </head>
 
 <body>
-  <div style="margin-left: 50px;">
+  <div style="padding: 50px;">
     <div class="row">
-      <img src="https://i.pinimg.com/originals/67/0b/bc/670bbc8b2507d5f2f0b32f73224e972a.gif" width="250"/>
+      <img src="https://vcdn-ione.vnecdn.net/2019/09/14/bikini-nho-xiu-1-4927-1568479881.jpg"/>
     </div>
     <div class="row" style="margin-top: 50px;">
       <label>Data send</label>
@@ -31,8 +31,11 @@
     <div class="row" style="margin-top: 50px;">
       <div style="margin-top: 20px;">
         <div>
-          <label>User</label>
-          <input type="text" name="txtUser" id="txtUser" value="devfsoft06">
+          <label>Mode send</label>
+          <select id="txtModeSend">
+            <option value=1>Public</option>
+            <option value=2>Private</option>
+          </select>
         </div>
         <div>
           <label>Tieu de</label>
@@ -52,7 +55,7 @@
       <div style="margin-top: 20px;">
         <div>
           <label>User</label>
-          <input type="text" name="txtUserFirestore" id="txtUserFirestore" value="devfsoft06">
+          <input type="text" name="txtUserFirestore" id="txtUserFirestore" value="devfsoft06@gmail.com">
         </div>
         <div>
           <label>Device</label>
@@ -118,9 +121,6 @@
         JSON.stringify(data)
       );
     }
-
-    
-    
     document.getElementById("txtSend").value = JSON.stringify(data);
   }
 
@@ -174,7 +174,8 @@
   async function handlePushNotify (){
     try {
       const data = {
-        user: document.getElementById("txtUser").value,
+        mode: parseInt(document.getElementById("txtModeSend").value) === 1 ? "all" : "single",
+        userList: ["devfsoft06@gmail.com"],
         title: document.getElementById("txtTitle").value,
         content: document.getElementById("txtContent").value
       }
@@ -182,8 +183,8 @@
       const response = await axios.post('http://localhost:3003/push-notify', data)
       console.log('==================================== handlePushNotify');
       console.log(response);
-      console.log('====================================');
-
+      console.log('==================================== data');
+      console.log(data);
 
       if (response && response.status === 200){
         const title = document.getElementById("txtContent").value;

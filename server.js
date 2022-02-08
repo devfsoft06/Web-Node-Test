@@ -9,8 +9,8 @@ const { initializeApp, applicationDefault, cert } = require("firebase-admin/app"
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
 const serviceAccount = require("./serviceAccountKey.json");
-// const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
-const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
+const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
+// const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -203,6 +203,40 @@ app.post("/update-notify-data", async (req, res) => {
     res.send({
       status: false,
       data: {},
+      msg: e.toString(),
+    });
+  }
+});
+
+app.get("/languages-version", (req, res) => {
+  console.info("-----> /languages-version");
+
+  res.send({
+    status: true,
+    version: 1,
+  });
+});
+
+app.get("/news-languages", (req, res) => {
+  console.info("-----> /news-languages");
+
+  try {
+    fs.readFile("./en.json", (err, data) => {
+      if (err) {
+        res.send({
+          status: false,
+          msg: "Read language failed",
+        });
+      } else {
+        res.send({
+          status: true,
+          data: JSON.parse(data),
+        });
+      }
+    });
+  } catch (e) {
+    res.send({
+      status: false,
       msg: e.toString(),
     });
   }
