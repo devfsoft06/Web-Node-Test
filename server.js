@@ -9,8 +9,8 @@ const { initializeApp, applicationDefault, cert } = require("firebase-admin/app"
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
 const serviceAccount = require("./serviceAccountKey.json");
-const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
-// const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
+// const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
+const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -208,20 +208,10 @@ app.post("/update-notify-data", async (req, res) => {
   }
 });
 
-app.get("/languages-version", (req, res) => {
+app.get("/languages", async (req, res) => {
   console.info("-----> /languages-version");
-
-  res.send({
-    status: true,
-    version: 1,
-  });
-});
-
-app.get("/news-languages", (req, res) => {
-  console.info("-----> /news-languages");
-
   try {
-    fs.readFile("./en.json", (err, data) => {
+    fs.readFile("./languages.json", (err, data) => {
       if (err) {
         res.send({
           status: false,
@@ -230,6 +220,7 @@ app.get("/news-languages", (req, res) => {
       } else {
         res.send({
           status: true,
+          version: 1,
           data: JSON.parse(data),
         });
       }

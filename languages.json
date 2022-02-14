@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "en": {
+    "popupData": {
+      "network": {
+        "title": "Warning",
+        "content": "Please check the network on your device. Try closing the application and reopening."
+      },
+      "update": {
+        "title": "Notify",
+        "content": "Application has a new version.Please select OK to update."
+      },
+      "webviewErr": {
+        "title": "Error",
+        "content": "Please check the network on your device. Try closing the application and reopening."
+      },
+      "permissionNotify": {
+        "title": "Error",
+        "content": "There is no right to receive notifications. Try closing the application and reopening."
+      },
+      "biometric": {
+        "ERR01": {
+          "title": "Error",
+          "content": "Device not setup fingerprint"
+        },
+        "ERR02": {
+          "title": "Error",
+          "content": "The device does not support."
+        },
+        "ERR03": {
+          "title": "Error",
+          "content": "Incorrect biometric"
+        },
+        "ERR04": {
+          "title": "Warning",
+          "content": "Authentication fails many times."
+        },
+        "ERR05": {
+          "title": "Warning",
+          "content": "Authentication fails many times. Please restart the sensor device that has been turned off."
+        }
+      },
+      "socialLogin": {
+        "google": {
+          "title": "Error",
+          "content": "Login failed. Please try again."
+        }
+      },
+      "barcode": {
+        "ERR01": {
+          "title": "Error",
+          "content": "Scan failed."
+        },
+        "ERR02": {
+          "title": "Error",
+          "content": "Please check permission camera on app."
+        }
+      },
+      "errConnectionRefused": {
+        "title": "Error",
+        "content": "The system has been faulty please try again later."
+      }
+    }
+  },
+  "vi": {
+    "popupData": {
+      "network": {
+        "title": "Cảnh báo",
+        "content": "Vui lòng kiểm tra mạng trên thiết bị của bạn. Hãy thử đóng ứng dụng và mở lại."
+      },
+      "update": {
+        "title": "Thông báo",
+        "content": "Ứng dụng có phiên bản mới. Vui lòng chọn OK để cập nhật."
+      },
+      "webviewErr": {
+        "title": "Lỗi",
+        "content": "Vui lòng kiểm tra mạng trên thiết bị của bạn. Hãy thử đóng ứng dụng và mở lại."
+      },
+      "permissionNotify": {
+        "title": "Lỗi",
+        "content": "Không được cấp quyền nhận thông báo. Hãy thử đóng ứng dụng và mở lại."
+      },
+      "biometric": {
+        "ERR01": {
+          "title": "Lỗi",
+          "content": "Thiết bị chưa được thiết lập dấu vân tay."
+        },
+        "ERR02": {
+          "title": "Lỗi",
+          "content": "Thiết bị không hỗ trợ sinh trắc học."
+        },
+        "ERR03": {
+          "title": "Lỗi",
+          "content": "Xác thực sinh trắc học không chính xác."
+        },
+        "ERR04": {
+          "title": "Cảnh báo",
+          "content": "Xác thực thất bại nhiều lần."
+        },
+        "ERR05": {
+          "title": "Cảnh báo",
+          "content": "Xác thực thất bại nhiều lần. Vui lòng khởi động lại thiết bị vì cảm biến đã bị tắt."
+        }
+      },
+      "socialLogin": {
+        "google": {
+          "title": "Lỗi",
+          "content": "Đăng nhập thất bại. Vui lòng thử lại."
+        }
+      },
+      "barcode": {
+        "ERR01": {
+          "title": "Lỗi",
+          "content": "Quét mã vạch thất bại."
+        },
+        "ERR02": {
+          "title": "Lỗi",
+          "content": "Vui lòng kiểm tra camera cho phép trên ứng dụng."
+        }
+      },
+      "errConnectionRefused": {
+        "title": "Lỗi",
+        "content": "Hệ thống đã bị lỗi vui lòng thử lại sau."
+      }
+    }
+  }
+}
