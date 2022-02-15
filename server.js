@@ -9,8 +9,8 @@ const { initializeApp, applicationDefault, cert } = require("firebase-admin/app"
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
 const serviceAccount = require("./serviceAccountKey.json");
-// const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
-const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
+const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
+// const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -86,7 +86,7 @@ app.post("/push-notify", async (req, res) => {
       .then((response) => {
         if (response && response.status === 200) {
           console.log("====================================push-notify: response");
-          console.log(response);
+          console.log(response.data);
           console.log("====================================");
 
           res.send({
@@ -129,7 +129,7 @@ app.post("/update-token-data", async (req, res) => {
       .post(_uri + "update-token-data", req.body)
       .then((response) => {
         console.log("==================================== update-token-data: response");
-        console.log(response);
+        console.log(response.data);
         console.log("====================================");
 
         if (response && response.status === 200) {
@@ -173,7 +173,7 @@ app.post("/update-notify-data", async (req, res) => {
       .post(_uri + "update-notify-data", req.body)
       .then((response) => {
         console.log("==================================== update-notify-data: response");
-        console.log(response);
+        console.log(response.data);
         console.log("====================================");
 
         if (response && response.status === 200) {
