@@ -39,11 +39,11 @@
         </div>
         <div>
           <label>Tieu de</label>
-          <input type="text" name="txtTitle" id="txtTitle" value="Tieu de">
+          <input type="text" name="txtTitle" id="txtTitle" value="Tieu de:_1">
         </div>
         <div>
           <label>Noi dung</label>
-          <input type="text" name="txtContent" id="txtContent" value="Noi dung:_1">
+          <input type="text" name="txtContent" id="txtContent" value="Noi dung nek">
         </div>
       </div>
       <div class="column" style="margin-top: 20px;">
@@ -174,11 +174,20 @@
 
   async function handlePushNotify (){
     try {
+      let result = '';
+      let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      for ( let i = 0; i < 20; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * 20));
+      }
+
       const data = {
-        mode: parseInt(document.getElementById("txtModeSend").value) === 1 ? "all" : "single",
-        userList: ["devfsoft06@gmail.com"],
-        title: document.getElementById("txtTitle").value,
-        content: document.getElementById("txtContent").value
+        title:  document.getElementById("txtTitle").value,
+        body: result,
+        data: {
+          "reference": "123",
+          "action": "Staking Daily | User created | Order failed",
+          "details": "Description details"
+        },
       }
 
       const response = await axios.post('http://localhost:3003/push-notify', data)
@@ -188,11 +197,11 @@
       console.log(data);
 
       if (response && response.status === 200){
-        const title = document.getElementById("txtContent").value;
+        const title = document.getElementById("txtTitle").value;
         const index = title.indexOf(':_');
         const num = title.substring(index + 2, index + 3);
         const val = title.replace(num, (parseInt(num) + 1).toString());
-        document.getElementById("txtContent").value = val;
+        document.getElementById("txtTitle").value = val;
       }
     } catch (e) {
       console.error(e)

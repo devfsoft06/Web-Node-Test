@@ -9,8 +9,8 @@ const { initializeApp, applicationDefault, cert } = require("firebase-admin/app"
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
 const serviceAccount = require("./serviceAccountKey.json");
-const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
-// const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
+// const _uri = "http://localhost:5001/fir-coinstocknews/us-central1/app/api/v1/";
+const _uri = "https://us-central1-fir-coinstocknews.cloudfunctions.net/app/api/v1/";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
