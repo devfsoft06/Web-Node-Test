@@ -21,7 +21,7 @@ initializeApp({
   credential: cert(serviceAccount),
 });
 
-// const db = getFirestore();
+const db = getFirestore();
 
 app.listen(3003, () => {
   console.log("Application started and Listening on port 3003");
@@ -232,6 +232,57 @@ app.get("/languages", async (req, res) => {
     });
   }
 });
+
+
+///////////////////////////////////////////////////////////
+app.post("/add-data-news", (req, res) => {
+  console.info("add-data ", req.body);
+  handleWriteDataToFB(req.body, res);
+});
+app.get("/read-data-news", (req, res) => {
+  console.info("read-data ", req.body);
+  handleReadDataToFB(req.body, res);
+});
+
+
+///////////////////////////////////////////////////////////
+
+
+function handleWriteDataToFB(req, res) {
+  db.collection("hello-hakgok").doc("news").set({
+      title: req.title,
+      content: req.content,
+      img: req.img
+  })
+  .then(() => {
+      console.log("Document successfully written!");
+      res.send({
+        status: true,
+        data: req
+      });
+      res.status(200).json({
+        status: true,
+        data: req
+      });
+  })
+  .catch((error) => {
+      console.error("Error writing document: ", error);
+      res.send(false);
+  });
+}
+
+function handleReadDataToFB(req, res) {
+  db.collection("hello-hakgok").doc("news")
+    .onSnapshot((doc) => {
+      console.log("Current data: ", doc.data());
+      const data = doc.data();
+      if (data){
+        res.send(data)
+      } else {
+        res.send(false);
+      }
+    });
+}
 
 async function handleSignInGoogle(req, res) {
   console.log("==================================== handleSignInGoogle");
